@@ -1,0 +1,118 @@
+; AddTwo.asm - adds two 32-bit integers.
+; Chapter 3 example
+
+.386
+.model flat,stdcall
+.stack 4096
+.data
+
+; when defining variables/labels
+
+tissue BYTE 8		; tissue = 8
+tissue2 BYTE ?		; byte tissue
+					; ? means uninitialized
+					; #### REFERENCE SHEET ####
+					; register names that start with E
+					; e means extended, 32 bits
+					; register names ending with H or L
+					; mean high or low part of a 16 bit register
+					; they will always be 8 bits
+
+					; 5 = x, immediate cannot be destination
+
+					; taking a "smaller" value and 
+					; putting it into a "bigger value"
+					; maybe i think i'm gonna overflow
+
+					; negative values?
+					; 2s complement
+					; int x = 5;
+					; cout << x + 2.5;
+					; double y = x;
+
+
+num dword 12		; num is a label
+					; similar to a var identifier
+					; is just a way
+					; to find a memory location
+
+variable dword 100  ; 32 bits
+
+; variABLE dword 200; assembly is NOT case sensitive
+
+					; 3 different types of data
+					; to start
+					; BYTE = 8 bits
+					; WORD = 16 bits
+					; DWORD (double word) = 32 bits
+					; QWORD (quad word) = 64 bits
+					; TBYTE (10 bytes) = 80 bits
+
+ExitProcess proto,dwExitCode:dword
+
+.code
+main proc
+
+	;mov num, variable		; not allowed to use
+							; two memory operands
+
+	mov variable, 10
+
+	;mov eax, tissue			; tissue is an 8 bit variable
+							; this is an error
+							; bc eax is 32 bits
+							; mismatched/invalid operands
+
+	; without zero extension
+	; mov eax, tissue
+	mov al, tissue
+
+	mov ah, 10				; immediate values/addressing
+							; the default is decimals
+							; in hex, this is 0A
+						
+						
+							; can specify binary
+	mov ah, 10010010b		; add a b at the end for binary
+							; 9 2 in hex
+							
+
+							; can specify hex
+							
+	mov ah, 0abh			; for hex, add an hat the end
+							; also must add a leading 0
+
+	mov ah, 'C'				; ascii value of 43 hex, or 67 decimal
+							
+
+	movzx eax, tissue		; it'll take the value in tissue, which is 8
+							; 0000 1000
+							; copy into eax, which is a 32 bit register
+							; and make eax = 0000 0000 0000 0000 0000 0000 0000 1000
+							; in hex, eax = 0 0 0 0 0 0 0 8 
+
+	mov al, 11111111b		; -1 in 2s complement
+	movsx ax, al				; it should sign extend
+								; the MSD, which is 1
+
+	mov al, 01111111b			; since leading bit is 0
+	movsx ax, al				; this is a positive #
+								; so sign extend will add
+								; leading 0s
+
+	mov	eax, num	; eax = num	
+					; eax is a register
+					; it's provided by the h/w
+					; num is a memory location
+					
+	mov ebx, 10		; ebx = 10
+					; 10 is an immediate
+					; addressing mode
+					; or operand
+					; hard coding
+					; baked into the program
+	add	eax,ebx				
+
+	invoke ExitProcess,0
+main endp
+end main
